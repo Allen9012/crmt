@@ -46,6 +46,8 @@ pnpm dev
 - **重资产（图片原图二进制）一律存 Storage**，数据库只存引用路径，不存二进制。
 - 目的：保护数据库体积（免费层约 500MB）。
 
+完整数据模型说明见 [docs/data-model.md](docs/data-model.md)。
+
 ## 常用脚本
 
 | 命令 | 说明 |
@@ -59,6 +61,28 @@ pnpm dev
 | `pnpm format:check` | 检查格式（不修改） |
 | `pnpm test` | 运行测试 |
 | `pnpm test:watch` | 监听模式运行测试 |
+
+## Demo 部署说明
+
+1. 在 Supabase 项目中执行 `supabase/migrations` 下的迁移，确认 `profiles`、`posts`、`post_images` 和 `images` bucket 已创建。
+2. 在 Supabase Auth 中启用 Email provider，并保留邮箱验证；Google provider 可按需配置。
+3. 在 Vercel 项目环境变量中配置：
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `NEXT_PUBLIC_SITE_URL`
+4. 将 `NEXT_PUBLIC_SITE_URL` 设置为部署后的站点地址，并把 Supabase Auth 回调地址配置为：
+   - `https://your-domain.example/auth/callback`
+5. 部署前运行：
+
+```bash
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+```
+
+> 当前是 demo 验证阶段。正式面向国内用户运营前，需要完成 ICP 备案，并将数据库、对象存储、登录与内容审核迁移到合规的国内云方案。
 
 ## 目录结构
 
