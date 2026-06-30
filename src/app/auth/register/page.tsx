@@ -8,12 +8,12 @@ export default function RegisterPage() {
     <main className="min-h-screen bg-[linear-gradient(180deg,#f7f3ea_0%,#e8decb_100%)] px-5 py-10 text-stone-950">
       <section className="mx-auto grid min-h-[calc(100vh-5rem)] w-full max-w-5xl overflow-hidden border border-stone-900/10 bg-white/70 shadow-[0_24px_80px_rgba(52,42,28,0.14)] backdrop-blur lg:grid-cols-[0.9fr_1.1fr]">
         <aside className="bg-[#202c22] p-8 text-stone-50 sm:p-10">
-          <p className="text-xs uppercase tracking-[0.28em] text-stone-300">CRMT</p>
+          <p className="text-xs uppercase tracking-[0.28em] text-stone-300">脆弱馒头</p>
           <h1 className="mt-6 font-[family-name:var(--font-serif)] text-4xl leading-tight">
             给下一次出发，留一个干净的起点。
           </h1>
           <p className="mt-5 text-sm leading-7 text-stone-300">
-            注册后需要先完成邮箱验证，再登录发布内容。这个流程慢一点，但账号状态会更清楚。
+            注册后即可使用邮箱和密码登录。当前先保证账号闭环可用，后续再接入更完整的验证流程。
           </p>
         </aside>
 

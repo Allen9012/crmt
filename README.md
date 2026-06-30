@@ -35,7 +35,7 @@ pnpm dev
 
 1. 在 [supabase.com](https://supabase.com) 创建项目。
 2. 从 Settings > API 获取 `URL`、`anon key`、`service_role key`，填入 `.env.local`。
-3. Auth 设置：启用 Email provider，保留邮箱验证；Google provider 可选。
+3. Auth 设置：启用 Email provider；当前 demo 阶段注册由服务端创建已确认账号，暂不要求邮箱验证。
 4. 执行数据库迁移与 Storage 配置（见后续 `supabase/migrations`，任务组 2-3 实现）。
 
 > 安全红线：`SUPABASE_SERVICE_ROLE_KEY` 是最高权限密钥，仅用于服务端，绝不下发浏览器、绝不提交仓库。`.env*` 已在 `.gitignore` 中。
@@ -65,7 +65,7 @@ pnpm dev
 ## Demo 部署说明
 
 1. 在 Supabase 项目中执行 `supabase/migrations` 下的迁移，确认 `profiles`、`posts`、`post_images` 和 `images` bucket 已创建。
-2. 在 Supabase Auth 中启用 Email provider，并保留邮箱验证；Google provider 可按需配置。
+2. 在 Supabase Auth 中启用 Email provider；当前 demo 阶段注册由服务端创建已确认账号，不要求邮箱验证。
 3. 在 Vercel 项目环境变量中配置：
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`

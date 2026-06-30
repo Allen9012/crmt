@@ -114,7 +114,7 @@ Supabase Auth 内置账号表，不由业务 migration 创建。
 设计点：
 
 - `profiles.id` 与 `auth.users.id` 一一对应。
-- `handle_new_user()` trigger 监听 `auth.users` 插入，自动创建资料。
+- 注册流程由服务端应用代码使用 `service_role` 显式创建资料，不再依赖 `auth.users` trigger。
 - 默认昵称来自邮箱前缀，若没有邮箱则使用 `hiker`。
 - 头像未设置时，前端使用昵称首字作为占位。
 
@@ -281,9 +281,9 @@ Storage 策略：
 设计点：
 
 - 这张表是 append-only 的审计记录，不参与正常业务读写。
-- 通过 trigger 自动记录 `profiles`、`posts`、`post_images` 的变化。
-- 应用层不应该依赖它实现业务逻辑。
-- 当前只授权 `service_role` 读取。
+- 注册 profile 创建审计由服务端应用代码显式写入。
+- 应用层不应该依赖它实现正常业务读写。
+- 当前只授权 `service_role` 写入和读取。
 
 ## 触发器与函数
 
@@ -297,16 +297,6 @@ Storage 策略：
 - `posts`
 - `post_images`
 
-### handle_new_user()
-
-监听 `auth.users` 插入，自动创建 `profiles`。
-
-行为：
-
-- 从邮箱前缀生成默认昵称。
-- 若邮箱为空，则默认昵称为 `hiker`。
-- 使用 `on conflict (id) do nothing` 避免重复创建。
-
 ### normalize_soft_delete_metadata()
 
 第二版增强函数，用于归一化软删除和恢复元数据。
@@ -315,18 +305,6 @@ Storage 策略：
 
 - `deleted_at` 从空变非空时，补 `deleted_by`。
 - `deleted_at` 从非空变空时，补 `restored_at` 和 `restored_by`。
-
-### record_row_audit()
-
-第二版增强函数，用于写入审计日志。
-
-行为：
-
-- insert 记为 `create`
-- delete 记为 `delete`
-- `deleted_at` 从空变非空记为 `soft_delete`
-- `deleted_at` 从非空变空记为 `restore`
-- 其他 update 记为 `update`
 
 ### soft_delete_post()
 
@@ -364,10 +342,11 @@ public.restore_post_image(p_post_image_id uuid)
 
 ### 注册
 
-1. 用户通过 Supabase Auth 注册。
-2. Supabase 写入 `auth.users`。
-3. `on_auth_user_created` trigger 调用 `handle_new_user()`。
-4. 系统自动写入 `profiles`。
+1. 用户提交邮箱和密码。
+2. 服务端使用 `service_role` 调用 Supabase Admin API 创建已确认账号。
+3. 服务端显式写入 `profiles`，默认昵称来自邮箱前缀。
+4. 服务端显式写入 `operation_audit_logs` 记录 profile 创建。
+5. 用户可直接使用邮箱和密码登录。
 
 ### 发布动态
 
